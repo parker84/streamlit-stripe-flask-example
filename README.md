@@ -16,6 +16,11 @@ stripe listen --forward-to 127.0.0.1:5000/stripe_webhook
 
 ## Understanding the Code
 
+### Authentication
+Our user authentication is loosely based on [streamlit-authenticator](https://github.com/mkhorasani/Streamlit-Authenticator) but we're writing users to a database instead of storing in a file. 
+
+See `utils/auth.py` for the authentication code.
+
 ### Accepting Payments
 We will be using Stripe to accept payments. Stripe is a payment processing platform that allows you to accept payments and manage your business.
 
