@@ -1,5 +1,5 @@
-# stream
-Monetize your streamlit apps
+# Streamlit x Flask x Stripe 🌶️
+Monetize your streamlit apps with Stripe and Flask
 
 ## Getting Started
 
