@@ -5,6 +5,7 @@ from utils.constants import (
     SIGNUP_URL
 )
 import jwt
+import stripe
 from decouple import config
 from utils.stripe import get_create_checkout_session_url
 import bcrypt
@@ -13,10 +14,12 @@ import extra_streamlit_components as stx
 from utils.validator import Validator
 from datetime import datetime, timedelta
 from sqlalchemy import create_engine
+from utils.constants import DB_URL
 import coloredlogs, logging
 logger = logging.getLogger(__name__)
 coloredlogs.install(level=config('LOG_LEVEL'), logger=logger)
-psql_engine = create_engine(f"postgresql://{config('DB_USER')}:{config('DB_PWD')}@{config('DB_HOST')}:{config('DB_PORT')}/{config('DB_NAME')}")
+psql_engine = create_engine(DB_URL)
+stripe.api_key = config('STRIPE_API_KEY')
 
 @st.cache_resource
 def get_manager():
@@ -65,7 +68,7 @@ class Authenticator():
             # TODO: add google auth functionality
     
     def check_if_user_exists(self, username):
-        df = pd.read_sql(f"select * from users where username='{username}'", con=psql_engine)
+        df = pd.read_sql(f"select * from {USER_TABLE} where username='{username}'", con=psql_engine)
         return df.shape[0] > 0
     
     def register_user(self, username, email, password):
@@ -80,15 +83,24 @@ class Authenticator():
         if user_exists:
             raise Exception('User already exists')
         else:
+            stripe_customer = stripe.Customer.create(
+                email=email,
+            )
             row = {
                 'username': username,
-                'email': email,
                 'hashed_password': hashed_password,
-                'created_at': datetime.now()
+                'email': email,
+                'created_at': datetime.utcnow(),
+                'updated_at': datetime.utcnow(),
+                'status': 0, # 0 = inactive, 1 = active, 2 = cancelled
+                'stripe_customer_id': stripe_customer.id,
+                # 'data': {}
             }
+            # TODO: migrate this to using models / sqlalchemy
             row_df = pd.DataFrame([row])
             logger.info(f"Row being added to {USER_TABLE}: \n{row_df}")
             row_df.to_sql(USER_TABLE, if_exists='append', con=psql_engine, index=False)
+            return stripe_customer
     
     def check_if_authenticated(self):
         if st.session_state['authentication_status']:
@@ -101,17 +113,17 @@ class Authenticator():
                 return False
 
     def check_user_login(self, username, password):
-        df = pd.read_sql(f"select * from users where username='{username}'", con=psql_engine)
+        df = pd.read_sql(f"select * from {USER_TABLE} where username='{username}'", con=psql_engine)
         if df.shape[0] > 0:
             hashed_pwd = df['hashed_password'].iloc[0]
             correct_password = verify_password(input_password=password, hashed_password=hashed_pwd.tobytes())
-            if correct_password:
+            if correct_password and df['status'].iloc[0] == 1:
                 st.session_state['username'] = username
                 st.session_state['authentication_status'] = True
                 self.exp_date = self._set_exp_date()
                 self.token = self._token_encode()
                 self.cookie_manager.set(self.cookie_name, self.token,
-                    expires_at=datetime.now() + timedelta(days=self.cookie_expiry_days))
+                    expires_at=datetime.utcnow() + timedelta(days=self.cookie_expiry_days))
                 return True
             else:
                 return False
@@ -189,8 +201,8 @@ def create_account_st_form():
     if email != '' and username != '' and password != '':
         # TODO: we need better logic here to ensure the account isn't being created before the
         # user is actually ready (otherwise we're getting "that account already exists" issues)
-        authenticator.register_user(username=username, email=email, password=password)
-        checkout_session_url = get_create_checkout_session_url(email)
+        stripe_customer = authenticator.register_user(username=username, email=email, password=password)
+        checkout_session_url = get_create_checkout_session_url(email, stripe_customer)
         st.link_button('Sign Up', url=checkout_session_url, type='primary')
     else:
         try_to_sign_up = st.button('Sign Up')
