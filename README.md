@@ -1,17 +1,69 @@
 # Streamlit x Flask x Stripe 🌶️
 Monetize your streamlit apps with Stripe and Flask
 
+## Purpose
+The purpose of this repo is to show you how you can create streamlit app that requires authenticated users to pay for access to it, using Stripe and Flask.
+
 ## Getting Started
 
-### Running the app locally
+### Setting up the Db
+This is where your users will be stored:
+1. Create a postgres database
+2. Run the `utils/db_setup.sql` script to create the `users` table
+
+### Setting up Stripe:
+1. Create a Stripe account
+2. Create a test product
+3. Grab the `price_id` from the product
+
+See more details here: [Accept Payments with Stripe Checkout](https://stripe.com/docs/checkout/quickstart)
+
+### Setting up the Environment
+Create a virtual environment and install the requirements:
 ```sh
+virtualenv venv -p python3.10
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Setup Stripe Port Forwarding
+We need to setup port forwarding so that Stripe can send webhooks to our local machine.
+```sh
+# install stripe cli
+brew install stripe/stripe-cli/stripe
+
+# forward stripe webhooks to our local machine
+stripe listen --forward-to 127.0.0.1:5000/stripe_webhook
+```
+In the output from this grab the `endpoint_secret` and add it to your .env file.
+
+
+### Set Environmental Variables
+
+Create a .env file in the root of the project and add the following variables:
+```sh
+# stripe variables
+STRIPE_API_KEY = sk_test_...
+STRIPE_ENDPOINT_SECRET = whsec_...
+
+# database variable
+DB_USER = ...
+DB_PWD = ...
+DB_HOST = ...
+DB_PORT = ...
+DB_NAME = ...
+
+# logging
+LOG_LEVEL=INFO
+```
+
+### Launch the App Locally
+```sh
+source ./venv/bin/activate
 # running the streamlit app
 streamlit run 🏡Home.py
-# running the flask app (for webhooks)
+# in a seperate terminal run the flask app (for webhooks)
 flask --app flask_app run
-# Stripe Development Environment:
-stripe listen --forward-to 127.0.0.1:5000/stripe_webhook
-# Then you can purchase a product from the streamlit app and see the webhook response in the terminal
 ```
 
 ## Understanding the Code

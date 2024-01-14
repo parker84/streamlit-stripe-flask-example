@@ -26,7 +26,6 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime, default=lambda x: datetime.utcnow())
     status = db.Column(db.Integer) # 0 = inactive, 1 = active, 2 = cancelled
     stripe_customer_id = db.Column(db.String, nullable=True, unique=True)
-    # data = db.Column(db.JSON, nullable=False, default=lambda: {})
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -74,3 +73,4 @@ def stripe_webhook():
 
 
 # TODO: add another webhook for when a user cancels their subscription
+# see stripe subscription webhook docs: https://stripe.com/docs/billing/subscriptions/webhooks

@@ -29,12 +29,6 @@ cookie_manager = get_manager()
 
 
 # --------------------helpers
-def verify_subscription_is_active():
-    # https://stripe.com/docs/api/subscriptions/retrieve
-    # TODO: verify the subscription is still active
-    # using the information we stored from the webhook we can lookup the subscription and verify that it's still active
-    pass
-
 # -- encryption
 def hash_password(password):
     # Generate a salt and hash the password with the salt
