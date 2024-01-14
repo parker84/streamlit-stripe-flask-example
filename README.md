@@ -3,10 +3,6 @@ Monetize your streamlit apps with Stripe and Flask
 
 <img width="1177" alt="image" src="https://github.com/parker84/streamlit-stripe-flask-example/assets/12496987/cd550810-59da-4af3-9ea8-3d676c03181c">
 
-
-## Purpose
-The purpose of this repo is to show you how you can create streamlit app that requires authenticated users to pay for access to it, using Stripe and Flask.
-
 ## Getting Started
 
 ### Setting up the Db
