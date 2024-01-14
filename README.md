@@ -37,6 +37,7 @@ stripe listen --forward-to 127.0.0.1:5000/stripe_webhook
 ```
 In the output from this grab the `endpoint_secret` and add it to your .env file.
 
+See more details here: [Fulfill orders with Stripe Checkout](https://stripe.com/docs/payments/checkout/fulfill-orders)
 
 ### Set Environmental Variables
 
