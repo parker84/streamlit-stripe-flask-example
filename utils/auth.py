@@ -97,10 +97,12 @@ class Authenticator():
             return stripe_customer
     
     def check_if_authenticated(self):
+        logger.debug(f'st.session_state: {st.session_state}')
         if st.session_state['authentication_status']:
             return True
         else:
             self._check_cookie()
+            logger.debug(f'st.session_state: {st.session_state}')
             if st.session_state['authentication_status']:
                 return True
             else:
@@ -172,13 +174,13 @@ class Authenticator():
         """
         # grabbed from here: https://github.com/mkhorasani/Streamlit-Authenticator/blob/main/streamlit_authenticator/authenticate.py
         self.token = self.cookie_manager.get(self.cookie_name)
+        logger.debug(f'self.token: {self.token}')
         if self.token is not None:
             self.token = self._token_decode()
             if self.token is not False:
                 if not st.session_state['logout']:
                     if self.token['exp_date'] > datetime.utcnow().timestamp():
                         if 'name' and 'username' in self.token:
-                            # st.session_state['name'] = self.token['name']
                             st.session_state['username'] = self.token['username']
                             st.session_state['authentication_status'] = True
 
