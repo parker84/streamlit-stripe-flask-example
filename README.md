@@ -66,6 +66,32 @@ streamlit run 🏡Home.py
 flask --app flask_app run
 ```
 
+### Now you can visit Your App at `http://localhost:8501`
+#### Click `Sign Up`:
+<img width="1005" alt="image" src="https://github.com/parker84/streamlit-stripe-flask-example/assets/12496987/00fecb9f-0813-45a4-9516-5dcc6587948c">
+
+#### And this will bring you to the Signup Page
+Enter your information and press signup:
+<img width="1011" alt="image" src="https://github.com/parker84/streamlit-stripe-flask-example/assets/12496987/5371e09d-39a3-4717-ae27-ac7f010f5daa">
+
+#### Then that will direct you to the Checkout Page
+On which you can use a test card (`424242...`) to purchase the product:
+<img width="1003" alt="image" src="https://github.com/parker84/streamlit-stripe-flask-example/assets/12496987/9ca1ae93-9843-4642-a826-7e2089ade9ca">
+(note it needs to be a test product that you created earlier to use the test card)
+
+#### Which will direct you to the Login Page
+Enter your information and click Login
+<img width="1007" alt="image" src="https://github.com/parker84/streamlit-stripe-flask-example/assets/12496987/0569361e-e0a0-468d-ba1b-c177f5ed8567">
+
+#### And Voila 🪄
+You are logged in and can access Your App:
+<img width="1070" alt="image" src="https://github.com/parker84/streamlit-stripe-flask-example/assets/12496987/a64c3f9e-c198-4e01-a7c0-fb608b0a30b7">
+
+And you can also lookup your user in the database and see that they're status is updated to `1` because you successfully completed the stripe checkout process:
+<img width="1072" alt="image" src="https://github.com/parker84/streamlit-stripe-flask-example/assets/12496987/a5102742-db35-49b3-affb-2dfdfb98aaae">
+
+
+
 ## Understanding the Code
 
 ### Authentication
